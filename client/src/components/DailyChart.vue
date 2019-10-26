@@ -8,7 +8,7 @@
 
     export default {
         extends: Bar,
-        name: 'chart',
+        name: 'daily-chart',
         data () {
             return {
                 data: {
