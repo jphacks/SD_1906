@@ -96,6 +96,10 @@
                                 stepSize: 10,
                             }
                         }]
+                    },
+                    animation: {
+                        duration: 500,
+                        easing: 'easeOutQuart'
                     }
                 }
             }
