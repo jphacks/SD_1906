@@ -5,6 +5,7 @@
         <li><router-link to="/">Home</router-link></li>
         <li><router-link to="/about">About</router-link></li>
         <li><router-link to="/daily">Daily</router-link></li>
+        <li><router-link to="/lifespan">Lifespan</router-link></li>
       </ul>
     </header>
     <router-view/>
