@@ -20,12 +20,12 @@
                             fillColor: 'rgba(0, 0, 255, 0.5)',
                             label: '獲得寿命',
                             data: hitoketa_data,
-                            backgroundColor: x_axis.map(function(num){
-                                var r = 2.55 * (100 - num);
-                                var g = 2.55 * num;
-                                return 'rgba(' + r.toString() + ', ' + g.toString() + ', 0)';
-                            }),
-                            backgroundColor: 'rgba(94, 255, 45, 0.6)',
+                            // backgroundColor: x_axis.map(function(num){
+                            //     var r = 2.55 * (100 - num);
+                            //     var g = 2.55 * num;
+                            //     return 'rgba(' + r.toString() + ', ' + g.toString() + ', 0)';
+                            // }),
+                            backgroundColor: 'rgba(94, 255, 45, 0.5)',
                             fill: true,
                             type: 'line',
                             lineTension: 0.1,
