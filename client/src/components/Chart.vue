@@ -1,42 +1,27 @@
 <script>
     import { Bar } from 'vue-chartjs';
 
+    var hitoketa_data = [];
+    for (var i = 100; i >= 0; i--){
+        hitoketa_data.push(i);
+    }
+
     export default {
         extends: Bar,
         name: 'chart',
         data () {
             return {
                 data: {
-                    labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+                    labels: hitoketa_data,
                     datasets: [
                         {
-                            label: 'Bar Dataset',
-                            data: [10, 20, 30, 40, 50, 30],
-                            backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
-                                'rgba(255, 206, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(153, 102, 255, 0.2)',
-                                'rgba(255, 159, 64, 0.2)'
-                            ],
-                            borderColor: [
-                                'rgba(255, 99, 132, 1)',
-                                'rgba(54, 162, 235, 1)',
-                                'rgba(255, 206, 86, 1)',
-                                'rgba(75, 192, 192, 1)',
-                                'rgba(153, 102, 255, 1)',
-                                'rgba(255, 159, 64, 1)'
-                            ],
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Line Dataset',
-                            data: [10, 50, 20, 30, 30, 40],
-                            borderColor: '#CFD8DC',
-                            fill: false,
-                            type: 'line',
-                            lineTension: 0.3,
+                            data: hitoketa_data,
+                            backgroundColor: hitoketa_data.map(function(num){
+                                var r = 2.55 * (100 - num);
+                                var g = 2.55 * num;
+                                return 'rgba(' + r.toString() + ', ' + g.toString() + ', 0)';
+                            }),
+
                         }
                     ]
                 },
@@ -45,7 +30,6 @@
                         xAxes: [{
                             scaleLabel: {
                                 display: true,
-                                labelString: 'Month'
                             }
                         }],
                         yAxes: [{
@@ -60,6 +44,6 @@
         },
         mounted () {
             this.renderChart(this.data, this.options)
-        }
+        },
     }
 </script>
