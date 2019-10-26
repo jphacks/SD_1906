@@ -23,6 +23,11 @@ const routes = [
     name: 'daily',
     component: () => import(/* webpackChunkName: "about" */ '../views/Daily.vue'),
   },
+  {
+    path: '/lifespan',
+    name: 'lifespan',
+    component: () => import(/* webpackChunkName: "about" */ '../views/Lifespan.vue'),
+  },
 ];
 
 const router = new VueRouter({
