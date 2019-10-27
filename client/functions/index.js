@@ -40,13 +40,28 @@ exports.postIsSitting = functions.https.onRequest((request, response) => {
         isSitting = request.body.isSitting,
         firestore = admin.firestore();
 
+    let FieldValue = require('firebase-admin').firestore.FieldValue;
+
     const docRef = firestore.collection('data').doc('values');
-    docRef.get()
-        .then(documentSnapshot => {
+
+    let removeIsSitting = docRef.update({
+        isSitting: FieldValue.delete()
+    });
+    removeIsSitting
+        .then(res => {
             docRef.set({isSitting: isSitting})
+                .then(res => {
+                    console.log(res);
+                    response.end();
+                })
+                .catch(error => {
+                    console.error(error);
+                    response.end();
+                });
+
         })
         .catch(error => {
             console.error(error);
             response.end();
-        })
+        });
 });

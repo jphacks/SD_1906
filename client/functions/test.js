@@ -4,7 +4,7 @@ const http = require('http');
 const HOST = `us-central1-jphacks2019-lifeleaf.cloudfunctions.net`;
 
 
-// test_postIsSitting(false);
+// test_postIsSitting(true);
 test_getIsSitting(true);
 
 function test_getIsSitting(isSitting){
