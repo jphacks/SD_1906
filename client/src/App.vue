@@ -3,26 +3,15 @@
     <router-view/>
     <header>
         <ul id="nav">
-          <li><router-link to="/">Home</router-link></li>
-          <!-- <li><router-link to="/about">About</router-link></li> -->
           <li><router-link to="/daily">Daily</router-link></li>
           <li><router-link to="/lifespan">Lifespan</router-link></li>
         </ul>
     </header>
-<!--    <img alt="Vue logo" src="./assets/logo.png">-->
-<!--    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>-->
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
-
-@Component({
-  components: {
-    HelloWorld,
-  },
-})
+import { Vue } from 'vue-property-decorator';
 export default class App extends Vue {}
 </script>
 
@@ -54,7 +43,7 @@ body {
 }
  
 #nav li {
-  width: 34%;
+  width: 50%;
   text-align: center;
   background-color: #fff;
   border: solid 1px #2c3e50;

@@ -20,10 +20,10 @@
     }
 
     // test visualization
-    var hitoketa_data = [];
-    for (let j = 0; j <= 120; ++j){
-        hitoketa_data.push(50 *(Math.tanh(-j/15 + 6) + 0.5) + 10 - j/50);
-    }
+    var chart_data = [];
+    // for (let j = 0; j <= 120; ++j){
+    //     chart_data.push(50 *(Math.tanh(-j*2/15 + 6) + 0.5) + 10 - j/50);
+    // }
 
     var update_counta = 0;
 
@@ -98,23 +98,13 @@
             return {
                 datacollection: null,
                 options: null
-                //         {
-                //     scales: {
-                //         xAxes: [{
-                //             type: "linear",
-                //             ticks: {
-                //                 callback: function(value) {return ((value % 3600) == 0)? value : '' }
-                //             }
-                //         }] 
-                //     }
-                // }
             }
         },
         mounted () {
             this.fillData();
-            // interval 60sec -> acutual use
+            // interval 60sec -> actual use
             // interval 0.01sec -> demo
-            setInterval(this.updateData, 1000 * 1)
+            setInterval(this.updateData, 1000 * 5);
         },
         methods: {
             fillData() {
@@ -122,8 +112,8 @@
                     labels: time_span,
                     datasets: [{
                         label: '',
-                        data: hitoketa_data,
-                        backgroundColor: hitoketa_data.map(num2color),
+                        data: chart_data,
+                        backgroundColor: chart_data.map(num2color),
                     }]
                 };
                 this.options = {
@@ -133,13 +123,31 @@
                 }
             },
             updateData(){
-                update_counta += 1;
-                // you can define f(t) 
-                // t = Interval
-                hitoketa_data.push(50 * (Math.tanh(-update_counta/15 + 6) + 0.5) + 10 - update_counta/50);
-                // hitoketa_data = hitoketa_data.slice(1, 101);
+                var url = 'https://us-central1-jphacks2019-lifeleaf.cloudfunctions.net/getIsSitting';
+                fetch(url, {
+                    mode: 'cors',
+                    method: 'GET',
+                    headers: new Headers({
+                        'content-type': 'application/json',
+                    })
+                }).then(function (response) {
+                    return response.json();
+                }).then(function (data) {
+                    if (data.isSitting) {
+                        update_counta += 1;
+                        chart_data.push(50 * (Math.tanh(-update_counta*2/15 + 6) + 0.5) + 10 - update_counta/50);
+                    }
+                    else {
+                        update_counta = 0;
+                        chart_data.push(0);
+                    }
+                    console.log(data.isSitting);
+                }).catch(function (error) {
+                    console.error(error);
+                });
+
                 this.fillData();
-            }
+            },
         },
     }
 </script>
