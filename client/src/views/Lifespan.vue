@@ -1,6 +1,6 @@
 <template>
     <div>
-        Daily
+        Lifespan
         <lifespan-chart></lifespan-chart>
     </div>
 </template>

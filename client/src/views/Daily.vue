@@ -114,7 +114,7 @@
             this.fillData();
             // interval 60sec -> acutual use
             // interval 0.01sec -> demo
-            setInterval(this.updateData, 1000 * 60)
+            setInterval(this.updateData, 1000 * 1)
         },
         methods: {
             fillData() {
