@@ -22,7 +22,7 @@
     // test visualization
     var hitoketa_data = [];
     for (let j = 0; j <= 120; ++j){
-        hitoketa_data.push(45 *(Math.tanh(-j*2/15 + 6) + 0.5) + 30);
+        hitoketa_data.push(50 *(Math.tanh(-j/15 + 6) + 0.5) + 10 - j/50);
     }
 
     var update_counta = 0;
@@ -112,7 +112,9 @@
         },
         mounted () {
             this.fillData();
-            setInterval(this.updateData, 1000 * 0.05)
+            // interval 60sec -> acutual use
+            // interval 0.01sec -> demo
+            setInterval(this.updateData, 1000 * 60)
         },
         methods: {
             fillData() {
@@ -134,7 +136,7 @@
                 update_counta += 1;
                 // you can define f(t) 
                 // t = Interval
-                hitoketa_data.push(45 * (Math.tanh(-update_counta*2/15 + 6) + 0.5) + 30);
+                hitoketa_data.push(50 * (Math.tanh(-update_counta/15 + 6) + 0.5) + 10 - update_counta/50);
                 // hitoketa_data = hitoketa_data.slice(1, 101);
                 this.fillData();
             }
