@@ -114,7 +114,7 @@
             this.fillData();
             // interval 60sec -> acutual use
             // interval 0.01sec -> demo
-            setInterval(this.updateData, 1000 * 1)
+            setInterval(this.updateData, 1)
         },
         methods: {
             fillData() {
@@ -133,6 +133,9 @@
                 }
             },
             updateData(){
+                if(update_counta == 230){
+                    update_counta = 0;
+                }
                 update_counta += 1;
                 // you can define f(t) 
                 // t = Interval
