@@ -1,6 +1,6 @@
 # Life Leaf
 
-![LifeLeaf logo](jphackslogo.png)
+![LifeLeaf logo](jphackslogo.PNG)
 
 ## 製品概要
 ### 長生き × Tech
