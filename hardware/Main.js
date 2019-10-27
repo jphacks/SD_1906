@@ -1,93 +1,107 @@
 const Obniz = require("obniz");
 var DPS310 = require("./DPS310");
 
-var obniz1 = new Obniz("9800-4747");
-var obniz2 = new Obniz("1552-7989");
+var obniz1 = new Obniz("1552-7989");
+var obniz2 = new Obniz("9800-4747");
 
-var checkElapsedTime = (function(startTime){
-    var nowTime = Date.now();
-    return function(){
-        var elapsedTime = nowTime - startTime;
-        return elapsedTime;
-    }
 
-}());
+var getPast = (function(){
+    var lastDate = NaN;
+  return function() {
+    var now = Date.now();
+    var past = now - lastDate;
+    lastDate = now;
+    return past;
+  }
+})();
 
 obniz1.onconnect = async function () {
+    
     Obniz.PartsRegistrate(DPS310);
     obniz1.setVccGnd(4,3,'5v');
     var sensor = obniz1.wired("DPS310", {sda:0, scl:1, gnd:2});
     let pastData = NaN;
-    const check_pressure_dif = 200; 
-    var posture_sitting;
-    var keep_posture;
-
+    const check_pressure_dif = 100; 
+    var angle = 80;
+    var posture = 0;
     await sensor.init();
-    let nowData = await sensor.measurePressureOnce();
-    var pressure_dif = nowData - pastData;
+    moveMotor(80, 0);
+    console.log("set angle");
 
-    if(pressure_dif > check_pressure_dif){
-        posture_sitting = 0;
-        keep_posture = 1;
-        console.log('Sitting');
-    }else if(pressure_dif < -check_pressure_dif){
-        posture_sitting = 1;
-        keep_posture = 1;
-        console.log('Standing');
-    }else if(posture_sitting == 0 && pressure_dif < check_pressure_dif && pressure_dif > -check_pressure_dif){
-        keep_posture = 0;
-        console.log('keep sitting');
-    }else if(posture_sitting == 1 && pressure_dif > -check_pressure_dif && pressure_dif < check_pressure_dif){
-        keep_posture = 0;
-        console.log('keep standing');
-    }
+    while(1){
 
-    if(posture_sitting == 0 && keep_posture == 1){
-        obniz2.onconnect(0);
-    }else if(posture_sitting == 1 && keep_posture == 1){
-        obniz2.onconnect(1);
-    }else if(posture_sitting == 0 && keep_posture == 0){
-        obniz2.onconnect(2);
-    }else if(posture_sitting == 1 && keep_posture == 0){
-        obniz2.onconnect(3);
-    }
-    pastData = nowData;
-}
+        let nowData = await sensor.measurePressureOnce();
+        var pressure_dif = nowData - pastData;
+        var elapsedTime = 0;
+        console.log(pressure_dif);
 
-obniz2.onconnect = async function (posture) {
+        if(pressure_dif > check_pressure_dif){
 
-    var i = 0;
-    var leaf1 = obniz2.wired("ServoMotor", {signal:1, gnd:0});
-    var leaf2 = obniz2.wired("ServoMotor", {signal:2});
-    var leaf3 = obniz2.wired("ServoMotor", {signal:3});
+            var sittingTime = Date.now();
+            angle = 80;
+            posture = 0;
+            console.log("sitting");
+            
+            while(pressure_dif > -check_pressure_dif){
+                nowData = await sensor.measurePressureOnce();
+                pressure_dif = nowData - pastData;
+                console.log(pressure_dif);
+                console.log("keep sitting");
+                pastData = nowData;
+                obniz1.wait(300);
 
-    if(posture == 0){
-        var sittingTime = Date.now();
-        obniz1.onconnect();
-    }else if(posture == 1){
-        var standingTime = Date.now();
-        obniz1.onconnect();
-    }else if(posture == 2){
-        if(checkElapsedTime(sittingTime) > 18000){
-                if(i > 0){
-                    leaf1.angle(i);
-                    leaf2.angle(180-i);
-                    leaf3.angle(i);
-                    i = i - 1;
-                    setTimeout(obniz1.onconnect(), 500);
+                if(elapsedTime > 5000){
+                    moveMotor(angle, posture);
+                    angle--;
                 }
-        }else{
-            obniz2.onconnect();
+            }
+
+        }else if(pressure_dif < -check_pressure_dif + 60){
+
+            var standingTime = Date.now();
+            angle = 0;
+            posture = 1;
+            console.log("standing");
+            
+            while(pressure_dif < check_pressure_dif){
+                nowData = await sensor.measurePressureOnce();
+                pressure_dif = nowData - pastData;
+                console.log(pressure_dif);
+                console.log("keep standing");
+                pastData = nowData;
+                obniz1.wait(300);
+
+                if(checkElapsedTime(standingTime) > 6000){
+                    moveMotor(angle, posture);
+                    angle++;
+                }
+            }
+
         }
-    }else if(posture == 3){
-        if(checkElapsedTime(standingTime) > 6000){
-                if(i < 80){
-                    leaf1.angle(i);
-                    leaf2.angle(180-i);
-                    leaf3.angle(i);
-                    i = i + 1;
-                    setTimeout(obniz1.onconnect(), 100);
-                }
-        };
+        pastData = nowData;
+        obniz1.wait(1000);
+    }
+}
+moveMotor = async function(angle, posture){
+    var obniz2 = new Obniz("9800-4747");
+    obniz2.onconnect = async function () {
+
+        var leaf1 = obniz2.wired("ServoMotor", {signal:1, gnd:0});
+        var leaf2 = obniz2.wired("ServoMotor", {signal:2});
+        var leaf3 = obniz2.wired("ServoMotor", {signal:3});
+
+        if(angle > 0 && posture == 0){
+            leaf1.angle(angle);
+            leaf2.angle(180-angle);
+            leaf3.angle(angle);
+            console.log("leaf");
+        }
+
+        if(angle < 80 && posture == 1){
+            leaf1.angle(angle);
+            leaf2.angle(180-angle);
+            leaf3.angle(angle);
+        }
+        
     }
 }
