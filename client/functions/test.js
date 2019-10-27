@@ -4,8 +4,8 @@ const http = require('http');
 const HOST = `us-central1-jphacks2019-lifeleaf.cloudfunctions.net`;
 
 
-// test_postIsSitting(true);
-test_getIsSitting(true);
+test_postIsSitting(true);
+// test_getIsSitting(true);
 
 function test_getIsSitting(isSitting){
     var postData = {
@@ -17,7 +17,11 @@ function test_getIsSitting(isSitting){
         host: HOST,
         port: 80,
         path: "/getIsSitting",
-        method: 'GET',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postDataStr)
+        }
     };
 
     var req = http
