@@ -1,3 +1,45 @@
+"use strict"
+var isSitting = false;
+const http = require('http');
+const HOST = `us-central1-jphacks2019-lifeleaf.cloudfunctions.net`;
+
+function postIsSitting(isSitting){
+    var postData = {
+        isSitting: isSitting
+    };
+    var postDataStr = JSON.stringify(postData);
+
+    var options = {
+        host: HOST,
+        port: 80,
+        path: "/postIsSitting",
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(postDataStr)
+        }
+    };
+
+    var req = http
+        .request(options, (res) => {
+            console.log('STATUS: ' + res.statusCode);
+            console.log('HEADERS: ' + JSON.stringify(res.headers));
+
+            res.setEncoding('utf8');
+            res.on('data', (chunk) => {
+                console.log('BODY: ' + chunk);
+            });
+        })
+        .on('error', (e) => {
+            console.log('problem with request: ' + e.message);
+        });
+
+    // HTTPリクエストの送信
+    req.write(postDataStr);
+
+    req.end();
+}
+
 const Obniz = require("obniz");
 var DPS310 = require("./DPS310");
 
@@ -7,12 +49,12 @@ var obniz2 = new Obniz("9800-4747");
 
 var getPast = (function(){
     var lastDate = NaN;
-  return function() {
-    var now = Date.now();
-    var past = now - lastDate;
-    lastDate = now;
-    return past;
-  }
+    return function() {
+        var now = Date.now();
+        var past = now - lastDate;
+        lastDate = now;
+        return past;
+    }
 })();
 
 var onLED5 = false;
@@ -21,28 +63,30 @@ var onLED7 = false;
 var onLED8 = false;
 var onLED9 = false;
 var onLED10 = false;
-  
+
 function adjustLED(){
-  obniz2.io5.output(onLED5);
-  obniz2.io6.output(onLED6);
-  obniz2.io7.output(onLED7);
-  obniz2.io8.output(onLED8);
-  obniz2.io9.output(onLED9);
-  obniz2.io10.output(onLED10);
+    obniz2.io5.output(onLED5);
+    obniz2.io6.output(onLED6);
+    obniz2.io7.output(onLED7);
+    obniz2.io8.output(onLED8);
+    obniz2.io9.output(onLED9);
+    obniz2.io10.output(onLED10);
 }
 
 obniz1.onconnect = async function () {
-    
+
     Obniz.PartsRegistrate(DPS310);
     obniz1.setVccGnd(4,3,'5v');
     var sensor = obniz1.wired("DPS310", {sda:0, scl:1, gnd:2});
     let pastData = NaN;
-    const check_pressure_dif = 100; 
+    const check_pressure_dif = 100;
     var angle = 30;
     var posture = 0;
     await sensor.init();
     moveMotor(80, 0);
     console.log("set angle");
+
+    postIsSitting(isSitting);
 
     while(1){
 
@@ -59,7 +103,9 @@ obniz1.onconnect = async function () {
             angle = 30;
             posture = 0;
             console.log("sitting");
-            
+            isSitting = true;
+            postIsSitting(isSitting);
+
             while(pressure_dif > -check_pressure_dif){
                 nowData = await sensor.measurePressureOnce();
                 pressure_dif = nowData - pastData;
@@ -83,7 +129,9 @@ obniz1.onconnect = async function () {
             angle = 0;
             posture = 1;
             console.log("standing");
-            
+            isSitting = false;
+            postIsSitting(isSitting);
+
             while(pressure_dif < check_pressure_dif){
                 nowData = await sensor.measurePressureOnce();
                 pressure_dif = nowData - pastData;
@@ -120,7 +168,7 @@ moveMotor = async function(angle, posture){
             leaf2.angle(180-angle);
             leaf3.angle(angle);
             console.log("move leaf");
-            if(angle < 29 && onLED5) onLED5 = false; 
+            if(angle < 29 && onLED5) onLED5 = false;
             else if(angle < 25 && onLED6) onLED6 = false;
             else if(angle < 20 && onLED7) onLED7 = false;
             else if(angle < 15 && onLED8) onLED8 = false;
@@ -133,7 +181,7 @@ moveMotor = async function(angle, posture){
             leaf1.angle(angle);
             leaf2.angle(180-angle);
             leaf3.angle(angle);
-            if(angle < 29 && !onLED5) onLED5 = true; 
+            if(angle < 29 && !onLED5) onLED5 = true;
             else if(angle < 25 && !onLED6) onLED6 = true;
             else if(angle < 20 && !onLED7) onLED7 = true;
             else if(angle < 15 && !onLED8) onLED8 = true;
@@ -141,6 +189,6 @@ moveMotor = async function(angle, posture){
             else if(angle < 5 && !onLED10) onLED10 = true;
             adjustLED();
         }
-        
+
     }
 }
