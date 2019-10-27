@@ -3,9 +3,13 @@
 
     var hitoketa_data = [];
     var x_axis = [];
-    for (var i = 120; i >= 0; i--){
+
+    // demo
+    for (var i = 0; i <= 120; ++i){
         x_axis.push(i);
-        hitoketa_data.push(i);
+        if(i <= 60)hitoketa_data.push(12.35 * Math.tanh(i/20));
+        else if(60 < i < 80)hitoketa_data.push(3 * Math.log(i));
+        else hitoketa_data.push(i);
     }
 
     export default {
@@ -18,7 +22,7 @@
                     datasets: [
                         {
                             fillColor: 'rgba(0, 0, 255, 0.5)',
-                            label: '獲得寿命',
+                            label: '総獲得寿命',
                             data: hitoketa_data,
                             // backgroundColor: x_axis.map(function(num){
                             //     var r = 2.55 * (100 - num);
@@ -38,7 +42,7 @@
                         xAxes: [{
                             scaleLabel: {
                                 display: true,
-                                labelString: '分前',
+                                labelString: '継続日数 ',
                             }
                         }],
                         yAxes: [{

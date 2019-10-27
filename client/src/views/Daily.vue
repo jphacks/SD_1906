@@ -8,10 +8,24 @@
 <script>
     import BarChart from "@/components/BarChart.vue";
 
-    var hitoketa_data = [];
-    for (var i = 100; i >= 0; i--){
-        hitoketa_data.push(i);
+    // variables initialization
+    var time_span = [];
+    for (let i = 0; i <= 1440; ++i){
+        // time_span.push(i);
+        if (i % 60 != 0) {
+            time_span.push('');
+        }else{ 
+            time_span.push(i/60);
+        }
     }
+
+    // test visualization
+    var hitoketa_data = [];
+    for (let j = 0; j <= 120; ++j){
+        hitoketa_data.push(50 *(Math.tanh(-j/15 + 6) + 0.5) + 10 - j/50);
+    }
+
+    var update_counta = 0;
 
     function num2color(num) {
         if(100 >= num && num > 95){
@@ -71,7 +85,7 @@
         else if(10 >= num && num > 5){
             return "#FF1900"
         }
-        else if(5 >= num && num >= 0){
+        else if(5 >= num){
             return "#FF0000"
         }
     }
@@ -84,16 +98,28 @@
             return {
                 datacollection: null,
                 options: null
+                //         {
+                //     scales: {
+                //         xAxes: [{
+                //             type: "linear",
+                //             ticks: {
+                //                 callback: function(value) {return ((value % 3600) == 0)? value : '' }
+                //             }
+                //         }] 
+                //     }
+                // }
             }
         },
         mounted () {
             this.fillData();
-            setInterval(this.updateData, 1000 * 10)
+            // interval 60sec -> acutual use
+            // interval 0.01sec -> demo
+            setInterval(this.updateData, 1000 * 1)
         },
         methods: {
             fillData() {
                 this.datacollection = {
-                    labels: hitoketa_data,
+                    labels: time_span,
                     datasets: [{
                         label: '',
                         data: hitoketa_data,
@@ -107,8 +133,12 @@
                 }
             },
             updateData(){
-                hitoketa_data.push(100)
-                this.fillData()
+                update_counta += 1;
+                // you can define f(t) 
+                // t = Interval
+                hitoketa_data.push(50 * (Math.tanh(-update_counta/15 + 6) + 0.5) + 10 - update_counta/50);
+                // hitoketa_data = hitoketa_data.slice(1, 101);
+                this.fillData();
             }
         },
     }
