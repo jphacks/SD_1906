@@ -1,6 +1,6 @@
 # Life Leaf
 
-[![LifeLeaf logo](jphackslogo.PNG)https://www.youtube.com/watch?v=I9lW8w-ahCU]
+![https://www.youtube.com/watch?v=I9lW8w-ahCU](jphackslogo.PNG)
 
 ## 製品概要
 ### 長生き × Tech
